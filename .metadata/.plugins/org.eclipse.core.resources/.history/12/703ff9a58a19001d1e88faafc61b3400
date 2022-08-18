@@ -1,0 +1,63 @@
+package com.complaint.management.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.complaint.management.entity.Ticket;
+import com.complaint.management.model.TicketDTO;
+import com.complaint.management.repository.TicketRepository;
+import com.complaint.management.service.TicketService;
+
+@Transactional
+@Service
+public class TicketServiceImpl implements TicketService {
+
+	@Autowired
+	TicketRepository ticketRepository;
+	
+	@Autowired
+	ModelMapper mapper;
+
+	@Override
+	public void addTicket(TicketDTO ticketDTO) {
+		Ticket ticket = mapper.map(ticketDTO, Ticket.class);
+		ticketRepository.save(ticket);
+	}
+
+	@Override
+	public void updateTicket(TicketDTO ticketDTO) {
+		Ticket ticket = ticketRepository.findById(ticketDTO.getId()).orElse(null);
+		if(ticket != null) {
+			mapper.map(ticketDTO, Ticket.class);
+		}
+		ticketRepository.save(ticket);
+	}
+
+	@Override
+	public void deleteTicket(int id) {
+		Ticket ticket = ticketRepository.findById(id).orElse(null);
+		if (ticket != null) {
+			ticketRepository.delete(ticket);
+		}
+	}
+
+	@Override
+	public TicketDTO getTicket(int id) {
+		Ticket ticket = ticketRepository.findById(id).orElse(null);
+		if(ticket != null) {
+			return mapper.map(ticket, TicketDTO.class);
+		}
+		return null;
+	}
+
+	@Override
+	public List<TicketDTO> getAllTickets() {
+		List<TicketDTO> ticketDTOs = new ArrayList<TicketDTO>();
+		return null;
+	}
+}

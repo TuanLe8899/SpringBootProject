@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="casesensitive" value="false"/>
+		<item key="wholeword" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<item key="selection" value="form-group"/>
+		<list key="findhistory">
+			<item value="row"/>
+			<item value="jackson"/>
+			<item value="layout"/>
+			<item value="Search:"/>
+			<item value="${base_url}"/>
+			<item value="${page}"/>
+			<item value="/department/list"/>
+			<item value="page"/>
+		</list>
+		<list key="replacehistory">
+			<item value="form-group"/>
+			<item value="__${base_url}__"/>
+			<item value="${p}"/>
+			<item value="${base_url}"/>
+			<item value="model.addAttribute"/>
+			<item value="th:href"/>
+			<item value="@{"/>
+		</list>
+	</section>
+</section>

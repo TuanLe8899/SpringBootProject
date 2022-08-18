@@ -1,0 +1,226 @@
+@charset "UTF-8";
+
+*{margin: 0; padding: 0}
+
+a {
+	text-decoration: none;
+	color: black;
+}
+
+.container {
+	display: block;
+	width: calc(100% - 210px);
+ 	height: inherit; 
+ 	margin: 0 5px 0 205px;
+}
+
+.card {
+	display: inline-block;
+	background-color:LightGray;
+	border: 2px solid DarkGray;
+	border-radius: 4px;
+	margin: 0 5px 5px 0;
+}
+
+.delete-icon {
+	color: red;
+}
+
+/* button css */
+.add-button {
+	display: inline-block;
+	background-color: #04AA6D;
+	color: white;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.details-button {
+	display: inline-block;
+	background-color: #08b7c4;
+	color: white;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.edit-button {
+	display: inline-block;
+	background-color: blue;
+	color: white;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.delete-button {
+	display: inline-block;
+	background-color: red;
+	color: white;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.search-button {
+	color:black;
+	background-color: LightGray; 
+	width: 100px;
+	display: inline-block;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.apply-button {
+	display: inline-block;
+	background-color: gray;
+	color: white;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+/* filter css */
+input[type="text"].field-sort-filter {
+	width: auto;
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+.field-sort-filter {
+	width: auto;
+	border: 1px solid black;
+	border-radius: 4px;
+}
+
+/* table css */
+table {
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+td, th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
+
+th.action-column {
+	width: 200px;
+}
+
+tr:nth-child(even) {
+	background-color: #dddddd;
+}
+
+/* form css */
+form {
+	
+}
+
+input[type="text"], input[type="password"], input[type="search"], input[type="file"], select, textarea {
+	width: 300px;
+	padding: 5px;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+	margin-bottom: 6px;
+	border-radius: 4px;
+}
+
+input[type="file"] {
+	border: none;
+}
+
+textarea {
+	height:100px;
+}
+
+/* pagination css */
+.pagination-frame {
+	display: inline-block;
+	width: 100%;
+}
+
+.pagination a {
+	display:block;
+	color: black;
+	float: left;
+	width: 40px;
+	height: 36px;
+	line-height: 36px;
+	text-align: center;
+	text-decoration: none;
+	transition: background-color .3s;
+	border: 1px solid #ddd;
+}
+
+.pagination a.active {
+	background-color: #4CAF50;
+	color: white;
+	border: 1px solid #4CAF50;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+/* details page */
+
+.details {
+	width: calc(100% - 380px);
+}
+
+.details .display-image {
+	display: inline-block;
+	margin-right: 5px;
+	float: left;
+}
+
+.details .display-image img, .image-form {
+	display: block;
+	width: 300px;
+  	height: 200px;
+ 	object-fit: cover;
+  	object-position: center;
+	overflow: hidden;
+}
+
+.details .content {
+	display: inline-block;
+	width: calc(100% - 305px);
+}
+
+.details .content div {
+	margin-bottom: 10px;
+}
+
+.info-tag {
+	display: inline-block;
+	width: 150px;
+}
+
+.details .content div h3.name-tag {
+	display: inline;
+}
+
+.details .content div p {
+	display: inline;
+	font-size: 20px;
+}
+
+div.description {
+	clear:both;
+}
+
+div.description p {
+	font-size: 20px;
+	text-align: justify;
+	text-justify: inter-word;
+}

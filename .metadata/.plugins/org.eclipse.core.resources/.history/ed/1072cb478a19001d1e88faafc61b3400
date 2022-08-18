@@ -1,0 +1,14 @@
+package com.complaint.management.service;
+
+import com.complaint.management.model.TicketDTO;
+
+public interface TicketService {
+
+	void addTicket(TicketDTO ticketDTO);
+	
+	void updateTicket(TicketDTO ticketDTO);
+	
+	void deleteTicket(int id);
+	
+	TicketDTO getTicket(int id);
+}

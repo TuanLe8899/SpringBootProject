@@ -1,0 +1,29 @@
+package com.complaint.management.service;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.data.domain.Sort;
+
+import com.complaint.management.model.TicketDTO;
+
+public interface TicketService {
+
+	void addTicket(TicketDTO ticketDTO);
+	
+	void updateTicket(TicketDTO ticketDTO);
+	
+	void deleteTicket(int id);
+	
+	TicketDTO getTicket(int id);
+	
+	List<TicketDTO> getAllTickets(int page, int size, Sort sort);
+	
+	List<TicketDTO> searchByDateFrom(Date from, int page, int size, Sort sort);
+	
+	List<TicketDTO> searchByDateTo(Date to, int page, int size, Sort sort);
+	
+	List<TicketDTO> searchByDateFromTo(Date from, Date to, int page, int size, Sort sort);
+	
+	List<TicketDTO> searchByCustomerPhone(String customerPhone, int page, int size, Sort sort);
+}

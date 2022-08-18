@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="index">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>add ticket</title>
+</head>
+
+<div layout:fragment="content" class="container-fluid">
+    <div class="card shadow mb-4">
+    	<div class="card-header py-3">
+        	<h6 class="m-0 font-weight-bold text-gray-900">Create Ticket</h6>
+        </div>
+        <div class="card-body">
+			<form th:action="@{/ticket/add}" method="post" th:object="${ticket}">
+			  <div class="col-6 p-0">
+		  		<div class="form-group">
+		  			<label for="customerName">Customer Name:</label>
+			    	<input th:field="*{customer_name}" type="text" class="form-control" placeholder="Enter customer name...">
+			  	</div>
+			  
+			  	<div class="form-group">
+			  		<label for="customerPhone">Customer Phone:</label>
+			    	<input th:field="*{customerPhone}" type="tel" class="form-control" placeholder="Enter customer phone...">
+			  	</div>
+			  
+			  	<div class="form-group">
+			  		<label for="title">Title:</label>
+			    	<input th:field="*{title}" type="text" class="form-control" placeholder="Title...">
+			  	</div>
+			  
+			  	<div class="form-group">
+  				  	<label for="content">Content:</label><br>
+			    	<textarea th:field="*{content}" class="form-control"></textarea>
+			  	</div>
+			  	
+			  	<div class="form-group">
+				  	<label for="department_id">Assign for department:</label>
+				  	<select class="form-control" name="department_id">
+				    	<option th:each="department: ${departments}" th:value="${department.id}" th:text="${department.name}"></option>
+				  	</select>
+				</div>
+			  	
+			  	<button type="submit" class="btn btn-success">Add</button>
+			  </div>
+			  
+			</form>
+		</div>
+	</div>
+</div>

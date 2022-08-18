@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="index">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>add ticket</title>
+</head>
+
+<div layout:fragment="content" class="container-fluid">
+    <div class="card shadow mb-4">
+    	<div class="card-header py-3">
+        	<h6 class="m-0 font-weight-bold text-gray-900">Create Ticket</h6>
+        </div>
+        <div class="card-body">
+			<form th:action="@{/ticket/add}" method="post" th:object="${department}">
+			  <label for="name">Name:</label>
+			  
+			  <div class="row">
+			  	<div class="col-6">
+			    	<input th:field="*{name}" type="text" class="form-control" placeholder="Enter department name...">
+			  	</div>
+			  </div>
+			  
+			  <button type="submit" class="btn btn-success mt-2">Add</button>
+			</form>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="index">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>add department</title>
+</head>
+
+<!-- The Modal -->
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    
+      <!-- Modal Header -->
+ <div class="modal-header">
+   <h4 class="modal-title text-gray-900">Create Department</h4>
+   <button type="button" class="close" data-dismiss="modal">&times;</button>
+ </div>
+ 
+ <!-- Modal body -->
+    <div class="modal-body">
+<form th:action="@{/department/add}" method="post" th:object="${department}">
+  <div class="form-group">
+    <label for="name">Name:</label>
+    <input name="name" type="text" class="form-control" placeholder="Enter department name...">
+  </div>
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>											          
+    </div>
+    
+    <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
