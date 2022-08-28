@@ -13,6 +13,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.Data;
 
 @Data
@@ -30,6 +32,7 @@ public class Ticket {
 	@Column(name = "customer_phone")
 	private String customerPhone;
 	
+	@Column(unique = true)
 	private String title;
 	
 	private String content;
@@ -49,5 +52,7 @@ public class Ticket {
 	
 	@ManyToOne
 	@JoinColumn(name = "id_department")
+	@JsonBackReference
 	private Department department;
+	
 }

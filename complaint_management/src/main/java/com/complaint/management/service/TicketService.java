@@ -1,10 +1,9 @@
 package com.complaint.management.service;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 
 import com.complaint.management.model.TicketDTO;
 
@@ -18,17 +17,17 @@ public interface TicketService {
 	
 	TicketDTO getTicket(int id);
 	
-	Page<TicketDTO> getAllTickets(int page, int size, Sort sort);
+	Page<TicketDTO> getAllTickets(Pageable pageable);
 	
-	Page<TicketDTO> searchByDateFrom(Date from, int page, int size, Sort sort);
+	Page<TicketDTO> searchByDateFrom(Date from, Pageable pageable);
 	
-	Page<TicketDTO> searchByDateTo(Date to, int page, int size, Sort sort);
+	Page<TicketDTO> searchByDateTo(Date to, Pageable pageable);
 	
-	Page<TicketDTO> searchByDateFromTo(Date from, Date to, int page, int size, Sort sort);
+	Page<TicketDTO> searchByDateFromTo(Date from, Date to, Pageable pageable);
 	
-	Page<TicketDTO> searchByCustomerPhone(String customerPhone, int page, int size, Sort sort);
+	Page<TicketDTO> searchByCustomerPhone(String customerPhone, Pageable pageable);
 	
-	Page<TicketDTO> searchByDepartmentName(String departmentName, int page, int size, Sort sort);
+	Page<TicketDTO> searchByDepartmentID(int id, Pageable pageable);
 	
-	Page<TicketDTO> searchByAll(String departmentName, Date from, Date to, String customerPhone, int page, int size, Sort sort);
+	Page<TicketDTO> searchByAll(int id, Date from, Date to, String customerPhone, Pageable pageable);
 }

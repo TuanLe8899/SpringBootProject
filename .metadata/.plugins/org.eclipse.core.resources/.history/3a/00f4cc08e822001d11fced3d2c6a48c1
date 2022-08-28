@@ -1,0 +1,42 @@
+package com.complaint.management.model;
+
+import java.util.Date;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.PastOrPresent;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.complaint.management.entity.Department;
+
+import lombok.Data;
+
+@Data
+public class TicketDTO {
+
+	private int id;
+	
+//	@NotEmpty(message = "customer name must not be empty")
+	private String customerName;
+	
+//	@NotEmpty(message = "customer phone must not be empty")
+	private String customerPhone;
+	
+//	@NotEmpty(message = "title must not be empty")
+	private String title;
+	
+	private String content;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@PastOrPresent
+	private Date dateCreate;
+	
+	private String contentFeedback;
+	
+	private boolean status;
+	
+	private Date dateProcess;
+	
+	private Department department;
+	
+}

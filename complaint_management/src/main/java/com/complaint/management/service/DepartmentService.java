@@ -1,7 +1,7 @@
 package com.complaint.management.service;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 
 import com.complaint.management.model.DepartmentDTO;
 
@@ -15,7 +15,7 @@ public interface DepartmentService {
 	
 	DepartmentDTO getDepartment(int id);
 	
-	Page<DepartmentDTO> getAllDepartments(int page, int size, Sort sort);
+	Page<DepartmentDTO> getAllDepartments(Pageable pageable);
 	
-	Page<DepartmentDTO> searchByName(String name, int page, int size, Sort sort);
+	Page<DepartmentDTO> searchByName(String name, Pageable pageable);
 }

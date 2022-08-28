@@ -1,0 +1,291 @@
+package com.complaint.management.controller;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.complaint.management.model.TicketDTO;
+import com.complaint.management.repository.DepartmentRepository;
+import com.complaint.management.repository.TicketRepository;
+import com.complaint.management.service.DepartmentService;
+import com.complaint.management.service.TicketService;
+
+@Controller
+@RequestMapping("ticket")
+public class TicketController {
+	
+	@Autowired
+	TicketService ticketService;
+	
+	@Autowired 
+	TicketRepository ticketRepository;
+	
+	@Autowired
+	DepartmentService departmentService;
+	
+	@Autowired
+	DepartmentRepository departmentRepository;
+	
+	private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+	@GetMapping({"list/{page}/{size}/{field_sort}", "list"})
+	public String list(Model model,
+			@RequestParam(required = false) Map<String, String> parameters,
+			@PathVariable(required = false) Map<String, String> pathVariables) throws ParseException, NumberFormatException {
+		
+		int page = pathVariables.containsKey("page") ? Integer.parseInt(pathVariables.get("page")) : 1;
+		int size = pathVariables.containsKey("size") ? Integer.parseInt(pathVariables.get("size")) : 10;
+		String fieldSort = pathVariables.containsKey("field_sort") ? pathVariables.get("field_sort") : "id";	
+		
+		Pageable paginationAndSorting = PageRequest.of(page-1, size, Sort.by(Direction.ASC, fieldSort));
+		
+		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
+		
+		// get min date from database
+		Date minDateFromDatabase = ticketRepository.findAll(Sort.by(Direction.ASC, "dateCreate"))
+													.get(0).getDateCreate();
+		
+		// Init default value of all parameters on url
+		Date from = parameters.containsKey("from") ? 
+					formatter.parse(parameters.get("from")) : 
+					(minDateFromDatabase != null ? minDateFromDatabase : new Date());
+		Date to = parameters.containsKey("to") ? 
+					formatter.parse(parameters.get("to")) : 
+					new Date();
+		Integer department = parameters.containsKey("department") ? 
+								Integer.parseInt(parameters.get("department")) : 
+								Integer.valueOf(0);
+		String search = parameters.containsKey("search") ? 
+						parameters.get("search") : 
+						new String();
+
+		// check if search by ID ticket
+		boolean isIDTicketSearch = false;
+		
+		Page<TicketDTO> pages = ticketService.getAllTickets(paginationAndSorting);
+		if( (parameters.containsKey("department") || parameters.containsKey("search"))
+				&& (parameters.containsKey("from") || parameters.containsKey("to"))) {
+			pages = ticketService.searchByAll(department , from, to, search, paginationAndSorting);
+		} else if(parameters.containsKey("from") && parameters.containsKey("to")) {
+			pages = ticketService.searchByDateFromTo(from, to, paginationAndSorting);
+		} else if(parameters.containsKey("department")) {
+			pages = ticketService.searchByDepartmentID(department, paginationAndSorting);
+		} else if(parameters.containsKey("search")) {
+			if(ticketService.getTicket(Integer.parseInt(parameters.get("search"))) != null) isIDTicketSearch = true;
+			else pages = ticketService.searchByCustomerPhone(search, paginationAndSorting);
+		} else if(parameters.containsKey("from")) {
+			pages = ticketService.searchByDateFrom(from, paginationAndSorting);
+		} else if(parameters.containsKey("to")) {
+			pages = ticketService.searchByDateTo(to, paginationAndSorting);
+		}
+
+		if(isIDTicketSearch) tickets.add(ticketService.getTicket(Integer.parseInt(search)));
+		else tickets = pages.getContent();
+
+		StringBuilder stringParameters = new StringBuilder();
+		Iterator<Map.Entry<String, String>> itr = parameters.entrySet().iterator();
+		while (itr.hasNext()) {
+			Map.Entry<String, String> entry = itr.next();
+			stringParameters.append(entry.getKey()+"="+entry.getValue()+"&");
+		}
+		if(stringParameters.length() != 0)
+		stringParameters.deleteCharAt(stringParameters.length()-1);
+		
+		Map<String, Integer> pageParams = new HashMap<String, Integer>();
+		pageParams.put("department", department);
+		pageParams.put("page", page);
+		pageParams.put("size", size);
+		pageParams.put("total_pages", pages.getTotalPages());
+		pageParams.put("total_records", (int) pages.getTotalElements());
+		pageParams.put("first_record", (page-1)*size+1);
+		int lastRecordPerPage = (int) ( ((page-1)*size+size >= pageParams.get("total_records")) ? 
+											pageParams.get("total_records") : 
+											(page-1)*size+size);
+		pageParams.put("last_record", lastRecordPerPage);
+		pageParams.put("page_previous", page-1);
+		pageParams.put("page_next", page+1);
+		int pageDisplayFrom = page > pageParams.get("total_pages") - 5 
+								? (pageParams.get("total_pages") - 5 <= 0 ? 1 : pageParams.get("total_pages")-5)
+								: page;
+		pageParams.put("page_display_from", pageDisplayFrom);
+		int pageDisplayTo = page + 5 > pageParams.get("total_pages") 
+							? pageParams.get("total_pages")
+							: page + 5;
+		pageParams.put("page_display_to", pageDisplayTo);
+
+		model.addAttribute("parameters", parameters);
+		model.addAttribute("path_variables", pathVariables);
+		model.addAttribute("page_params", pageParams);
+		model.addAttribute("str_params", stringParameters);
+		model.addAttribute("tickets", tickets);
+		model.addAttribute("departments", departmentRepository.findAll());
+		return "ticket/list";
+	}
+	
+//	@GetMapping({"list/{page}/{size}/{field_sort}", "list"})
+//	public String list(Model model,
+//			@RequestParam(name="from", required = false) String dateFrom,
+//			@RequestParam(name="to", required = false) String dateTo,
+//			@RequestParam(defaultValue = "", required = false) String search,
+//			@RequestParam(name="department", required = false) Integer departmentID,
+//			@PathVariable(required = false) String page,
+//			@PathVariable(required = false) String size,
+//			@PathVariable(required = false, name="field_sort") String fieldSort) throws ParseException {
+//		
+//		
+//		int p = StringUtils.isEmpty(page) ? 1 : Integer.parseInt(page);
+//		int s = StringUtils.isEmpty(size) ? 10 : Integer.parseInt(size);
+//		fieldSort = StringUtils.isEmpty(fieldSort) ? "id" : fieldSort;		
+//		
+//		Pageable paginationAndSorting = PageRequest.of(p-1, s, Sort.by(Direction.ASC, fieldSort));
+//		
+//		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
+//		
+//		int checkNumberOfSearchConditions = 0;
+//		boolean isIDTicket = false;
+//		
+//		if(departmentID != null) checkNumberOfSearchConditions+=1;
+//		if(!search.equals("")) checkNumberOfSearchConditions+=1;
+//		if(dateFrom != null) checkNumberOfSearchConditions+=1;
+//		if(dateTo != null) checkNumberOfSearchConditions+=1;
+//
+//		Date minDateFromDatabase = ticketRepository
+//									.findAll(Sort.by(Direction.ASC, "dateCreate"))
+//									.get(0).getDateCreate();
+//		
+//		Date from = dateFrom != null
+//				? formatter.parse(dateFrom) 
+//				: (minDateFromDatabase != null ? minDateFromDatabase : new Date());
+//		
+//		Date to = dateTo != null ? formatter.parse(dateTo) : new Date();
+//		
+//		formatter.format(from);
+//		formatter.format(to);
+//
+//		Page<TicketDTO> pages = ticketService.getAllTickets(paginationAndSorting);
+//		
+//		if(checkNumberOfSearchConditions == 1) {
+//			if(dateFrom != null) {
+//				pages = ticketService.searchByDateFrom(from, paginationAndSorting);
+//			} else if(dateTo != null) {
+//				pages = ticketService.searchByDateTo(to, paginationAndSorting);
+//			} else if(departmentID != null) {
+//				pages = ticketService.searchByDepartmentID(departmentID, paginationAndSorting);
+//			} else if(!search.equals("")) {
+//				try {
+//					if(Integer.parseInt(search) <= 0) throw new NumberFormatException();
+//					if(ticketService.getTicket(Integer.parseInt(search)) == null) {
+//						if(ticketService.searchByCustomerPhone("%"+ search +"%", paginationAndSorting) == null) {
+//							throw new NullPointerException();
+//						}
+//						throw new NumberFormatException(); // not id, get to search by phone
+//					}
+//					
+//					isIDTicket=true;
+//				} catch (NumberFormatException e) {
+//					pages = ticketService.searchByCustomerPhone("%"+ search +"%", paginationAndSorting);
+//				} catch (NullPointerException e) {
+//				}
+//			}
+//			
+//		} else if(checkNumberOfSearchConditions >= 2) {
+//			if(isIDTicket) {} 
+//			else if(checkNumberOfSearchConditions == 2 && (dateFrom != null && dateTo != null) ) {
+//				pages = ticketService.searchByDateFromTo(from, to, paginationAndSorting);
+//			} else if(departmentID != null) {
+//				pages = ticketService.searchByAll(departmentID, from, to, "%"+search+"%", paginationAndSorting);
+//			}
+//		}
+//		
+//		if(isIDTicket) tickets.add(ticketService.getTicket(Integer.parseInt(search)));
+//		else tickets = pages.getContent();
+//		
+//		int totalPages = pages.getTotalPages();
+//		long totalRecords = pages.getTotalElements();
+//		int firstRecordPerPage = (p-1)*s+1;
+//		int lastRecordPerPage = (int) ((p-1)*s+s >= totalRecords ? totalRecords : (p-1)*s+s);
+//		
+//		model.addAttribute("tickets", tickets);
+//		model.addAttribute("from", dateFrom);
+//		model.addAttribute("to", dateTo);
+//		model.addAttribute("search", search);
+//		model.addAttribute("department", departmentID);
+//		model.addAttribute("p", p);
+//		model.addAttribute("s", s);
+//		model.addAttribute("field_sort", fieldSort);
+//		model.addAttribute("total_pages", totalPages);
+//		model.addAttribute("total_records", totalRecords);
+//		model.addAttribute("first_record", firstRecordPerPage);
+//		model.addAttribute("last_record", lastRecordPerPage);
+//		return "ticket/list";
+//	}
+	
+	@GetMapping("add")
+	public String add(Model model) {
+		TicketDTO ticket = new TicketDTO();
+		model.addAttribute("ticket", ticket);
+		model.addAttribute("departments", departmentRepository.findAll());
+		return "ticket/add";
+	}
+	
+	@PostMapping("add")
+	public String add(@ModelAttribute TicketDTO ticket,
+			@RequestParam("department_id") int departmentID) {
+		Date currentDate = new Date();
+		formatter.format(currentDate);
+		ticket.setDateCreate(currentDate);
+		ticket.setDepartment(departmentRepository.findById(departmentID).orElse(null));
+		ticketService.addTicket(ticket);
+		return "redirect:/ticket/list";
+	}
+	
+	@GetMapping("edit")
+	public String edit(Model model, @RequestParam int id) {
+		TicketDTO ticket = ticketService.getTicket(id);
+		model.addAttribute("ticket", ticket);
+		model.addAttribute("departments", departmentRepository.findAll());
+		return "ticket/edit";
+	}
+	
+	@PostMapping("edit")
+	public String edit(@ModelAttribute TicketDTO ticket,
+			@RequestParam("department_id") int departmentID,
+			@RequestParam("date_create") String dateCreate,
+			@RequestParam("original_date") String originalDate) throws ParseException {
+		
+		if (!dateCreate.equals("")) {
+			ticket.setDateCreate(formatter.parse(dateCreate));
+		} else {
+			ticket.setDateCreate(formatter.parse(originalDate));
+		}
+		ticket.setDepartment(departmentRepository.findById(departmentID).orElse(null));
+		ticketService.updateTicket(ticket);
+		return "redirect:/ticket/list";
+	}
+	
+	@GetMapping("delete")
+	public String delete(@RequestParam int id) {
+		ticketService.deleteTicket(id);
+		return "redirect:/ticket/list";
+	}
+}

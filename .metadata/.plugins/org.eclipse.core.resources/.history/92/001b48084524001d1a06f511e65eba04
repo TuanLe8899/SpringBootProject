@@ -1,0 +1,41 @@
+package com.complaint.management.model;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+import lombok.Data;
+
+@Data
+public class UserDTO {
+	private int id;
+	
+	private String avatar;
+	
+	@NotEmpty
+	private String name;
+	
+	@NotEmpty
+	@Email
+	private String username;
+	
+	@NotEmpty
+	@Size(min = 6, max = 12)
+	@Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\\]).{8,32}$",
+			message = "password is not valid (must have one digit[0-9], one lowercase character[a-z], one uppercase character[A-Z], one special character [*.!@#$%^&(){}[]:; and password must be between 8 and 32 characters")
+	private String password;
+	
+	@NotEmpty
+	private String repeatPassword;
+	
+	private String gender;
+	
+	private String role;
+	
+	private boolean enable;
+	
+	private String favourite;
+	
+	private String about;
+}

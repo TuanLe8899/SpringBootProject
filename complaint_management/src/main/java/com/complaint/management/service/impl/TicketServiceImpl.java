@@ -5,8 +5,7 @@ import java.util.Date;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,45 +57,44 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public Page<TicketDTO> getAllTickets(int page, int size, Sort sort) {
-		Page<Ticket> tickets = ticketRepository.findAll(PageRequest.of(page, size, sort));
+	public Page<TicketDTO> getAllTickets(Pageable pageable) {
+		Page<Ticket> tickets = ticketRepository.findAll(pageable);
 		return tickets.map((ticket) -> mapper.map(ticket, TicketDTO.class));
 	}
 
 	@Override
-	public Page<TicketDTO> searchByDateFrom(Date from, int page, int size, Sort sort) {
-		Page<Ticket> tickets = ticketRepository.searchByDateFrom(from, PageRequest.of(page, size, sort));
+	public Page<TicketDTO> searchByDateFrom(Date from, Pageable pageable) {
+		Page<Ticket> tickets = ticketRepository.searchByDateFrom(from, pageable);
 		return tickets.map((ticket) -> mapper.map(ticket, TicketDTO.class));
 	}
 
 	@Override
-	public Page<TicketDTO> searchByDateTo(Date to, int page, int size, Sort sort) {
-		Page<Ticket> tickets = ticketRepository.searchByDateTo(to, PageRequest.of(page, size, sort));
+	public Page<TicketDTO> searchByDateTo(Date to, Pageable pageable) {
+		Page<Ticket> tickets = ticketRepository.searchByDateTo(to, pageable);
 		return tickets.map((ticket) -> mapper.map(ticket, TicketDTO.class));
 	}
 
 	@Override
-	public Page<TicketDTO> searchByDateFromTo(Date from, Date to, int page, int size, Sort sort) {
-		Page<Ticket> tickets = ticketRepository.searchByDateFromTo(from, to, PageRequest.of(page, size, sort));
+	public Page<TicketDTO> searchByDateFromTo(Date from, Date to, Pageable pageable) {
+		Page<Ticket> tickets = ticketRepository.searchByDateFromTo(from, to, pageable);
 		return tickets.map((ticket) -> mapper.map(ticket, TicketDTO.class));
 	}
 
 	@Override
-	public Page<TicketDTO> searchByCustomerPhone(String customerPhone, int page, int size, Sort sort) {
-		Page<Ticket> tickets = ticketRepository.searchByCustomerPhone(customerPhone, PageRequest.of(page, size, sort));
+	public Page<TicketDTO> searchByCustomerPhone(String customerPhone, Pageable pageable) {
+		Page<Ticket> tickets = ticketRepository.searchByCustomerPhone(customerPhone, pageable);
 		return tickets.map((ticket) -> mapper.map(ticket, TicketDTO.class));
 	}
 
 	@Override
-	public Page<TicketDTO> searchByDepartmentName(String departmentName, int page, int size, Sort sort) {
-		Page<Ticket> tickets = ticketRepository.searchByDepartmentName(departmentName, PageRequest.of(page, size, sort));
+	public Page<TicketDTO> searchByDepartmentID(int id, Pageable pageable) {
+		Page<Ticket> tickets = ticketRepository.searchByDepartmentID(id, pageable);
 		return tickets.map((ticket) -> mapper.map(ticket, TicketDTO.class));
 	}
 
 	@Override
-	public Page<TicketDTO> searchByAll(String departmentName, Date from, Date to, String customerPhone,
-			int page, int size, Sort sort) {
-		Page<Ticket> tickets = ticketRepository.searchByAll(departmentName, from, to, customerPhone, PageRequest.of(page, size, sort));
+	public Page<TicketDTO> searchByAll(int id, Date from, Date to, String customerPhone, Pageable pageable) {
+		Page<Ticket> tickets = ticketRepository.searchByAll(id, from, to, customerPhone, pageable);
 		return tickets.map((ticket) -> mapper.map(ticket, TicketDTO.class));
 	}
 	

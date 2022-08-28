@@ -1,5 +1,7 @@
 package com.complaint.management.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +16,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Integer>
 	
 	@Query("SELECT dpm FROM Department dpm WHERE dpm.name LIKE :s")
 	Page<Department> searchByName(@Param("s") String name, Pageable pageable);
+	
+	List<Department> findByNameContaining(String name);
 }

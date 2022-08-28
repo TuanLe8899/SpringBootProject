@@ -15,6 +15,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.Data;
 
 @Data
@@ -26,6 +28,7 @@ public class Department {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	@Column(unique = true)
 	private String name;
 	
 	@Temporal(TemporalType.DATE)
@@ -33,5 +36,7 @@ public class Department {
 	private Date dateCreate;
 	
 	@OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonManagedReference
 	private List<Ticket> tickets;
+	
 }

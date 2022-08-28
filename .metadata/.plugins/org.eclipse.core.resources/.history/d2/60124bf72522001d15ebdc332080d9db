@@ -1,0 +1,150 @@
+package com.complaint.management.api;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.util.StringUtils;
+
+import com.complaint.management.model.TicketDTO;
+import com.complaint.management.repository.DepartmentRepository;
+import com.complaint.management.repository.TicketRepository;
+import com.complaint.management.service.DepartmentService;
+import com.complaint.management.service.TicketService;
+
+@RestController
+@RequestMapping("ticket")
+public class TicketAPI {
+	
+	@Autowired
+	TicketService ticketService;
+	
+	@Autowired 
+	TicketRepository ticketRepository;
+	
+	@Autowired
+	DepartmentService departmentService;
+	
+	@Autowired
+	DepartmentRepository departmentRepository;
+	
+	private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+	@GetMapping({"list_api/{page}/{size}/{field_sort}", "list_api"})
+	public List<TicketDTO> list(Model model,
+			@RequestParam(required = false) Map<String, String> parameters,
+			@PathVariable(required = false) Map<String, String> pathVariables) throws ParseException, NumberFormatException {
+		
+		int page = pathVariables.containsKey("page") ? Integer.parseInt(pathVariables.get("page")) : 1;
+		int size = pathVariables.containsKey("size") ? Integer.parseInt(pathVariables.get("size")) : 10;
+		String fieldSort = pathVariables.containsKey("field_sort") ? pathVariables.get("field_sort") : "id";	
+		
+		Pageable paginationAndSorting = PageRequest.of(page-1, size, Sort.by(Direction.ASC, fieldSort));
+		
+		List<TicketDTO> tickets = new ArrayList<TicketDTO>();
+		
+		// get min date from database
+		Date minDateFromDatabase = ticketRepository.findAll(Sort.by(Direction.ASC, "dateCreate"))
+													.get(0).getDateCreate();
+		
+		// Init default value of all parameters on url
+		Date from = parameters.containsKey("from") 
+					? formatter.parse(parameters.get("from")) 
+					: (minDateFromDatabase != null ? minDateFromDatabase : new Date());
+		Date to = parameters.containsKey("to") 
+					? formatter.parse(parameters.get("to")) 
+					: new Date();
+		formatter.format(from);
+		formatter.format(to);
+		Integer department = parameters.containsKey("department") 
+								? (!parameters.get("department").equals("0") ? Integer.parseInt(parameters.get("department")) : 0)
+								: 0;
+		String search = parameters.containsKey("search") ? 
+						parameters.get("search") : 
+						new String();
+		
+		// check if search by ID ticket
+		boolean isIDTicketSearch = false;
+		
+		Page<TicketDTO> pages = ticketService.getAllTickets(paginationAndSorting);
+		if( ((parameters.containsKey("department") && department != 0) || (parameters.containsKey("search")))
+				&& (parameters.containsKey("from") || parameters.containsKey("to"))
+				|| (parameters.containsKey("department") && department != 0) && (parameters.containsKey("search"))) {
+			pages = ticketService.searchByAll(department , from, to, "%"+search+"%", paginationAndSorting);
+		} else if(parameters.containsKey("from") && parameters.containsKey("to")) {
+			pages = ticketService.searchByDateFromTo(from, to, paginationAndSorting);
+		} else if(parameters.containsKey("department") && department != 0) {
+			pages = ticketService.searchByDepartmentID(department, paginationAndSorting);
+		} else if(parameters.containsKey("search")) {
+			try {
+				if(Integer.parseInt(search) <= 0) throw new NumberFormatException();
+				if(ticketService.getTicket(Integer.parseInt(search)) == null) {
+					if(ticketService.searchByCustomerPhone("%"+search+"%", paginationAndSorting) == null) {
+						throw new NullPointerException();
+					}
+					throw new NumberFormatException(); // not id, get to search by phone
+				}
+				isIDTicketSearch=true;
+			} catch (NumberFormatException e) {
+				pages = ticketService.searchByCustomerPhone("%"+search+"%", paginationAndSorting);
+			} catch (NullPointerException e) {
+			}
+		} else if(parameters.containsKey("from")) {
+			pages = ticketService.searchByDateFrom(from, paginationAndSorting);
+		} else if(parameters.containsKey("to")) {
+			pages = ticketService.searchByDateTo(to, paginationAndSorting);
+		}
+
+		if(isIDTicketSearch) tickets.add(ticketService.getTicket(Integer.parseInt(search)));
+		else tickets = pages.getContent();
+
+		return tickets;
+	}
+	
+	@GetMapping("get_api")
+	public TicketDTO add(@RequestParam int id) {
+		return ticketService.getTicket(id);
+	}
+	
+	@PostMapping("add_api")
+	public TicketDTO add(@RequestBody TicketDTO ticket) {
+		Date currentDate = new Date();
+		formatter.format(currentDate);
+		ticket.setDateCreate(currentDate);
+		ticketService.addTicket(ticket);
+		return ticket;
+	}
+	
+	@PutMapping("edit_api")
+	public TicketDTO edit(@RequestBody TicketDTO ticket) throws ParseException {
+		ticketService.updateTicket(ticket);
+		return ticket;
+	}
+	
+	@DeleteMapping("delete_api")
+	public void delete(@RequestParam int id) {
+		ticketService.deleteTicket(id);
+	}
+}

@@ -1,17 +1,20 @@
 package com.complaint.management.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,16 +25,18 @@ import org.thymeleaf.util.StringUtils;
 
 import com.complaint.management.model.DepartmentDTO;
 import com.complaint.management.service.DepartmentService;
+import com.complaint.management.validation.DepartmentValidator;
 
 @Controller
 @RequestMapping("department")
 public class DepartmentController {
-
+	
+	@Autowired
+	DepartmentValidator departmentValidator;
+	
 	@Autowired
 	DepartmentService departmentService;
-	
-	private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-	
+		
 	@GetMapping({"list/{page}/{size}/{field_sort}", "list"})
 	public String list(Model model,
 			@RequestParam(defaultValue = "", required = false) String search,
@@ -43,18 +48,20 @@ public class DepartmentController {
 		int s = StringUtils.isEmpty(size) ? 10 : Integer.parseInt(size);
 		fieldSort = StringUtils.isEmpty(fieldSort) ? "id" : fieldSort;
 		
-		Page<DepartmentDTO> pages = departmentService.getAllDepartments(p-1, s, Sort.by(Direction.ASC, fieldSort));
+		Pageable paginationAndSorting = PageRequest.of(p-1, s, Sort.by(Direction.ASC, fieldSort));
+		
+		Page<DepartmentDTO> pages = departmentService.getAllDepartments(paginationAndSorting);
 		List<DepartmentDTO> departments = new ArrayList<DepartmentDTO>();
 				
 		try {
 			if(Integer.parseInt(search) <= 0) throw new NumberFormatException();
 			if(departmentService.getDepartment(Integer.parseInt(search)) == null
-					&& departmentService.searchByName("%"+ search +"%", p-1, s, Sort.by(Direction.ASC, fieldSort)) == null) {
+					&& departmentService.searchByName("%"+ search +"%", paginationAndSorting) == null) {
 				throw new NullPointerException();
 			}
 			departments.add(departmentService.getDepartment(Integer.parseInt(search)));
 		} catch (NumberFormatException e) {
-			pages = departmentService.searchByName("%"+ search +"%", p-1, s, Sort.by(Direction.ASC, fieldSort));
+			pages = departmentService.searchByName("%"+ search +"%", paginationAndSorting);
 			departments = pages.getContent();
 		} catch (NullPointerException e) {
 		}
@@ -84,10 +91,13 @@ public class DepartmentController {
 	}
 	
 	@PostMapping("add")
-	public String add(@ModelAttribute DepartmentDTO department) {
-		Date currentDate = new Date();
-		formatter.format(currentDate);
-		department.setDateCreate(currentDate);
+	public String add(@ModelAttribute("department") @Valid DepartmentDTO department,
+			BindingResult bindingResult) {
+		departmentValidator.validate(department, bindingResult);
+		if(bindingResult.hasErrors()) {
+			return "department/add";
+		}
+		department.setDateCreate(new Date());
 		departmentService.addDepartment(department);
 		return "redirect:/department/list";
 	}
@@ -100,13 +110,11 @@ public class DepartmentController {
 	}
 	
 	@PostMapping("edit")
-	public String edit(@ModelAttribute DepartmentDTO department,
-			@RequestParam("date_create") String dateCreate,
-			@RequestParam("original_date") String originalDate) throws ParseException {
-		if (!dateCreate.equals("")) {
-			department.setDateCreate(formatter.parse(dateCreate));
-		} else {
-			department.setDateCreate(formatter.parse(originalDate));
+	public String edit(@ModelAttribute("department") @Valid DepartmentDTO department,
+			BindingResult bindingResult) {
+		departmentValidator.validate(department, bindingResult);
+		if(bindingResult.hasErrors()) {
+			return "department/edit";
 		}
 		departmentService.updateDepartment(department);
 		return "redirect:/department/list";
@@ -117,4 +125,6 @@ public class DepartmentController {
 		departmentService.deleteDepartment(id);
 		return "redirect:/department/list";
 	}
+	
+
 }

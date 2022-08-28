@@ -1,0 +1,5 @@
+package com.complaint.management.exception;
+
+public class ValidationException {
+
+}

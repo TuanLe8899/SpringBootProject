@@ -1,0 +1,6 @@
+package com.complaint.management.exception;
+
+public class Snippet {
+	private static final Logger LOG = Logger.getLogger(GlobalExceptionHandler.class);
+}
+

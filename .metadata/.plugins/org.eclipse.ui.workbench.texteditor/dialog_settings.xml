@@ -4,25 +4,26 @@
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="form-group"/>
+		<item key="selection" value=""/>
 		<list key="findhistory">
-			<item value="row"/>
-			<item value="jackson"/>
-			<item value="layout"/>
-			<item value="Search:"/>
-			<item value="${base_url}"/>
-			<item value="${page}"/>
-			<item value="/department/list"/>
-			<item value="page"/>
+			<item value="_api"/>
+			<item value=" *"/>
+			<item value="search"/>
+			<item value="p"/>
+			<item value="search=${search}"/>
+			<item value="${path_variables.field_sort}"/>
+			<item value=",field_sort=${path_variables.field_sort})"/>
+			<item value="p-1, s, Sort.by(Direction.ASC, fieldSort)"/>
 		</list>
 		<list key="replacehistory">
+			<item value="page"/>
+			<item value="__${str_params}__"/>
+			<item value="${field_sort}"/>
+			<item value="paginationAndSorting"/>
+			<item value="ticket"/>
 			<item value="form-group"/>
 			<item value="__${base_url}__"/>
 			<item value="${p}"/>
-			<item value="${base_url}"/>
-			<item value="model.addAttribute"/>
-			<item value="th:href"/>
-			<item value="@{"/>
 		</list>
 	</section>
 </section>

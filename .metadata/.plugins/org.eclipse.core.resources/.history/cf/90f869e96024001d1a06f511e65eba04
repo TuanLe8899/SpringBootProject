@@ -1,0 +1,19 @@
+package com.complaint.management.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+
+import com.complaint.management.model.MessageDTO;
+import com.complaint.management.service.EmailService;
+
+public class EmailServiceImpl implements EmailService {
+	
+	@Autowired
+	JavaMailSender javaMailSender;
+
+	@Override
+	public void sendEmail(MessageDTO message) {
+		
+	}
+
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="index">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>list ticket</title>
+</head>
+
+<!-- Begin Page Content -->
+<div layout:fragment="content" class="container-fluid">
+<th:block th:with="base_url='/ticket/list'">
+<th:block th:with="page=${page_params.page}">
+<th:block th:with="size=${page_params.size}">
+<th:block th:with="field_sort=${#maps.containsKey(path_variables, 'field_sort')} ? ${path_variables.field_sort} : 'id'">
+
+<th:block th:with="page_previous=${page_params.page_previous}">
+<th:block th:with="page_next=${page_params.page_next}">
+<th:block th:with="page_display_from=${page_params.page_display_from}">
+<th:block th:with="page_display_to=${page_params.page_display_to}">
+
+    <!-- DataTales Example -->
+       <div class="card shadow mb-4">
+           <div class="card-header py-3">
+               <h6 class="m-0 font-weight-bold text-gray-900">Danh sách khiếu nại</h6>
+           </div>
+           <div class="card-body">
+               <div class="table-responsive">
+                   <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+
+                       <div class="row">
+                           <div class="col-sm-12 col-md-6">
+                               <div class="dataTables_length" id="dataTable_length">
+                                   <label>
+                                       Show
+                                       <div class="dropdown d-inline-block">
+										  <button class="btn btn-white dropdown-toggle border" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="${size}">
+										  </button>
+										  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+										    <a class="dropdown-item" th:href="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=1,size=10,field_sort=${field_sort})}">10</a>
+										    <a class="dropdown-item" th:href="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=1,size=25,field_sort=${field_sort})}">25</a>
+										    <a class="dropdown-item" th:href="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=1,size=50,field_sort=${field_sort})}">50</a>
+										    <a class="dropdown-item" th:href="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=1,size=100,field_sort=${field_sort})}">100</a>
+										  </div>
+									   </div>
+                                       entries
+                                   </label>
+                               </div>
+                           </div>
+                           <div class="col-sm-12 col-md-6">
+                               <div id="dataTable_filter" class="dataTables_filter">
+                               	<form th:action="@{__${base_url}__/{page}/{size}/{field_sort}(page=${page},size=${size},field_sort=${field_sort})}" method="get">
+                                    <label>
+                                        Search:
+                                        <input type="search" class="form-control form-control-sm" name="search"
+                                            placeholder="" aria-controls="dataTable">
+                                    </label>
+                               	</form>
+                               </div>
+                           </div>
+                       </div>
+                       
+                       <div class=row>
+                       		<div class="col-3 p-0 d-inline-block">
+                       			<form method="get" id="form1">
+                                    <label class="w-75">
+	                                    Department:
+	                                    <select name="department" class="form-control" onchange="form1.submit()">
+	                                    		<option th:each="department: ${departments}" th:value="${department.id}" th:text="${department.name}"
+	                                    				th:selected="${department.id == page_params.department}"></option>
+	                                    </select>
+                                    </label>
+                                     <label class="w-75">
+	                                    Date from:
+                                    	<input type="date" class="form-control" name="from" onchange="form1.submit()">
+                                    </label>
+                       			</form>
+                            </div>
+                            <div class="col-3 p-0 d-inline-block">
+                       			<form th:action="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=${page},size=${size},field_sort=${field_sort})}" method="get" id="form2">
+                                    <label class="w-75">
+	                                    Date from:
+                                    	<input type="date" class="form-control" name="from" onchange="form2.submit()">
+                                    </label>
+                       			</form>
+                            </div>
+                            <div class="col-3 p-0 d-inline-block">
+                       			<form th:action="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=${page},size=${size},field_sort=${field_sort})}" method="get" id="form3">
+                                    <label class="w-75">
+	                                    To:
+                                    	<input type="date" class="form-control" name="to" onchange="form3.submit()">
+                                    </label>
+                       			</form>
+                            </div>
+                      		<div class="col-3 p-0 d-flex align-items-end justify-content-end">
+                      			<a th:href="@{/ticket/add}" class="btn btn-success btn-icon-split mb-2">
+								    <span class="icon text-white-50">
+								        <i class="fas fa-plus"></i>
+								    </span>
+								    <span class="text">Create</span>
+								</a>
+                       		</div>
+                       </div>
+
+                       <div class="row">
+                           <div class="col-sm-12">
+                              <table class="table table-bordered dataTable" id="dataTable" width="100%"
+                                  cellspacing="0" role="grid" aria-describedby="dataTable_info"
+                                  style="width: 100%;">
+	                              <thead>
+	                                  <tr role="row">
+	                                      <th th:class="${field_sort == 'id'} ? 'sorting_asc' : sorting" tabindex="0" aria-controls="dataTable"
+	                                          rowspan="1" colspan="1" aria-sort="ascending"
+	                                          th:attr="onclick=|location='__${base_url}__/${page}/${size}/id?__${str_params}__'|">
+	                                          ID</th>
+	                                      <th th:class="${field_sort == 'customerName'} ? 'sorting_asc' : sorting" tabindex="0" aria-controls="dataTable"
+	                                          rowspan="1" colspan="1"
+	                                          th:attr="onclick=|location='__${base_url}__/${page}/${size}/customerName?__${str_params}__'|">
+	                                          Tên khách hàng</th>
+	                                      <th th:class="${field_sort == 'customerPhone'} ? 'sorting_asc' : sorting" tabindex="0" aria-controls="dataTable"
+	                                          rowspan="1" colspan="1"
+	                                          th:attr="onclick=|location='__${base_url}__/${page}/${size}/customerPhone?__${str_params}__'|">
+	                                          Số điện thoại</th>
+	                                      <th th:class="${field_sort == 'title'} ? 'sorting_asc' : sorting" tabindex="0" aria-controls="dataTable"
+	                                          rowspan="1" colspan="1"
+	                                          th:attr="onclick=|location='__${base_url}__/${page}/${size}/title?__${str_params}__'|">
+	                                          Tiêu đề</th>
+	                                      <th th:class="${field_sort == 'dateCreate'} ? 'sorting_asc' : sorting" tabindex="0" aria-controls="dataTable"
+	                                          rowspan="1" colspan="1"
+	                                          th:attr="onclick=|location='__${base_url}__/${page}/${size}/dateCreate?__${str_params}__'|">
+	                                          Ngày tạo</th>
+	                                      <th th:class="${field_sort == 'status'} ? 'sorting_asc' : sorting" tabindex="0" aria-controls="dataTable"
+	                                          rowspan="1" colspan="1"
+	                                          th:attr="onclick=|location='__${base_url}__/${page}/${size}/status?__${str_params}__'|">
+	                                          Trạng Thái</th>
+	                                      <th th:class="${field_sort == 'department'} ? 'sorting_asc' : sorting" tabindex="0" aria-controls="dataTable"
+	                                          rowspan="1" colspan="1"
+	                                          th:attr="onclick=|location='__${base_url}__/${page}/${size}/department?__${str_params}__'|">
+	                                          Phòng ban đảm nhận</th>
+	                                      <th class="col-2" tabindex="0" aria-controls="dataTable"
+	                                          rowspan="1" colspan="1">
+	                                          Hành động</th>
+	                                  </tr>
+	                              </thead>
+	                              <tfoot>
+	                                  <tr>
+	                                      <th rowspan="1" colspan="1">ID</th>
+	                                      <th rowspan="1" colspan="1">Tên khách hàng</th>
+	                                      <th rowspan="1" colspan="1">Số điện thoại</th>
+	                                      <th rowspan="1" colspan="1">Tiêu đề</th>
+	                                      <th rowspan="1" colspan="1">Ngày tạo</th>
+	                                      <th rowspan="1" colspan="1">Trạng Thái</th>
+	                                      <th rowspan="1" colspan="1">Phòng ban đảm nhận</th>
+	                                      <th rowspan="1" colspan="1">Hành động</th>
+	                                  </tr>
+	                              </tfoot>
+	                              <tbody>
+	                                  <tr role="row" th:each="ticket, iter : ${tickets}" th:class="${iter.odd} ? 'odd' : 'even' ">
+	                                      <td th:class="${field_sort == 'id'} ? 'sorting_1'" th:text="${ticket.id}"></td>
+	                                      <td th:class="${field_sort == 'customerName'} ? 'sorting_1'" th:text="${ticket.customerName}"></td>
+	                                      <td th:class="${field_sort == 'customerPhone'} ? 'sorting_1'" th:text="${ticket.customerPhone}"></td>
+	                                      <td th:class="${field_sort == 'title'} ? 'sorting_1'" th:text="${ticket.title}"></td>
+	                                      <td th:class="${field_sort == 'dateCreate'} ? 'sorting_1'" th:text="${ticket.dateCreate}"></td>
+	                                      <td th:class="${field_sort == 'status'} ? 'sorting_1'" th:text="${ticket.status == false} ? 'Chưa xử lý' : 'Đã xử lý'"></td>
+	                                      <td th:class="${field_sort == 'department'} ? 'sorting_1'" th:text="${ticket.department.name}"></td>
+	                                      <td class="d-flex justify-content-center">
+	                                      	<a th:href="@{/ticket/edit?id=__${ticket.id}__}" class="btn btn-primary py-0 mx-1">Sửa</a>
+	                                      	<a th:href="@{/ticket/delete?id=__${ticket.id}__}" class="btn btn-danger py-0 mx-1">Xóa</a>
+	                                      </td>
+	                                  </tr>
+	                              </tbody>
+                         	 </table>
+                      	</div>
+                  	</div>
+                    
+                    <div class="row">
+                        <div class="col-sm-12 col-md-5">
+                            <div class="dataTables_info" id="dataTable_info" role="status"
+                                aria-live="polite">Showing [[${page_params.first_record}]] to [[${page_params.last_record}]] of [[${page_params.total_records}]] entries</div>
+                        </div>
+                        <div class="col-sm-12 col-md-7">
+                            <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                                <ul class="pagination text-gray-100">
+                                    <li th:class="${page == 1} ? 'paginate_button page-item previous disabled' : 'paginate_button page-item previous'" 
+                                    	id="dataTable_previous">
+                                    	<a th:href="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=${page_previous}, size=${size}, field_sort=${field_sort})}"
+                                        	aria-controls="dataTable" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+                                    </li>
+                                    
+                                    <th:block th:each="i : ${#numbers.sequence(page_display_from, page_display_to)}">
+                                    <li th:class="${i == page} ? 'paginate_button page-item active' : 'paginate_button page-item'">
+                                    	<a th:href="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=${i}, size=${size}, field_sort=${field_sort})}" 
+                                            aria-controls="dataTable" data-dt-idx="${i}" tabindex="0"
+                                            class="page-link" th:text="${i}"></a>
+                                    </li>
+                                    </th:block>
+                                    
+                                    <li th:class="${page == page_params.total_pages} ? 'paginate_button page-item next disabled' : 'paginate_button page-item next'"
+                                    	id="dataTable_next">
+                                    	<a th:href="@{__${base_url}__/{page}/{size}/{field_sort}?__${str_params}__(page=${page_next}, size=${size}, field_sort=${field_sort})}" 
+                                    		aria-controls="dataTable" data-dt-idx="${page}"
+                                            tabindex="0" class="page-link">Next</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</th:block>
+</th:block>
+</th:block>
+</th:block>
+</th:block>
+</th:block>
+</th:block>
+</div>
+<!-- /.container-fluid -->

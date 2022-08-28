@@ -1,0 +1,5 @@
+package com.complaint.management.model;
+
+public class MessageDTO {
+
+}

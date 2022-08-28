@@ -1,0 +1,24 @@
+package com.complaint.management.controller;
+
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
+
+import javassist.NotFoundException;
+
+@ControllerAdvice
+public class ExceptionController {
+	
+	@ExceptionHandler(NotFoundException.class)
+	public String returnPageNotFound404(Exception exception) {
+		exception.printStackTrace();
+		System.out.println("404");
+		return "404";
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public String returnPageError500(Exception exception) {
+		exception.printStackTrace();
+		return "500";
+	}
+}

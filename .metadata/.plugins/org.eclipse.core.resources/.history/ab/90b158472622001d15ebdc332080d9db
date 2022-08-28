@@ -1,0 +1,5 @@
+package com.complaint.management.api;
+
+public class ExceptionController {
+
+}

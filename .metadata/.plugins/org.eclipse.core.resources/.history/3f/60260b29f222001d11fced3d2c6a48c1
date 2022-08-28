@@ -1,0 +1,53 @@
+package com.complaint.management.validation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+
+import com.complaint.management.model.DepartmentDTO;
+import com.complaint.management.repository.DepartmentRepository;
+
+@Component
+public class DepartmentValidator implements Validator {
+
+	@Autowired
+	DepartmentRepository departmentRepository;
+	
+	@Autowired
+	ModelMapper mapper;
+	
+	@Override
+	public boolean supports(Class<?> clazz) {
+		return DepartmentDTO.class.isAssignableFrom(clazz);
+	}
+
+	@Override
+	public void validate(Object target, Errors errors) {
+		DepartmentDTO department = (DepartmentDTO) target;
+		
+		List<DepartmentDTO> departmentDtos = new ArrayList<DepartmentDTO>();
+		departmentRepository.findAll().forEach((dep) -> {
+			departmentDtos.add(mapper.map(dep, DepartmentDTO.class));
+		});
+		
+		
+        ListIterator<DepartmentDTO> iter = departmentDtos.listIterator();
+        while (iter.hasNext()) {
+        	System.out.println("yes");
+            if(iter.next().getName().equals(department.getName())) { 
+            	errors.rejectValue("name", "unique", "Department name already exists");
+            }
+        }
+        
+        if(department.getName().equals(null)) {
+			errors.rejectValue("name", "field.empty");
+		}
+	}
+
+}

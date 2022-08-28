@@ -24,6 +24,7 @@
 			  	<div class="col-6 form-group p-0">
 			  		<label for="name">Name:</label>
 			    	<input th:field="*{name}" type="text" class="form-control" placeholder="Enter department name...">
+			    	<span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
 			  	</div>
 			  
 			  	<button type="submit" class="btn btn-success">Add</button>

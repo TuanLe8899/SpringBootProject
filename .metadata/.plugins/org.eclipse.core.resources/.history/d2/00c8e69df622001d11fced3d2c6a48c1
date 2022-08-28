@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="index">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>edit ticket</title>
+</head>
+
+<div layout:fragment="content" class="container-fluid">
+    <div class="card shadow mb-4">
+    	<div class="card-header py-3">
+        	<h6 class="m-0 font-weight-bold text-gray-900">Edit Ticket</h6>
+        </div>
+        <div class="card-body">
+			<form th:action="@{/ticket/edit}" method="post" th:object="${ticket}">
+			  <input type="hidden" th:field="*{id}" th:value="${id}">
+				
+			  <div class="col-6 p-0">
+		  		<div class="form-group">
+		  			<label for="customerName">Customer Name:</label>
+			    	<input th:field="*{customerName}" type="text" class="form-control" th:value="${customerName}">
+			  	</div>
+			  
+			  	<div class="form-group">
+			  		<label for="customerPhone">Customer Phone:</label>
+			    	<input th:field="*{customerPhone}" type="tel" class="form-control" th:value="${customerPhone}">
+			  	</div>
+			  
+			  	<div class="form-group">
+			  		<label for="title">Title:</label>
+			    	<input th:field="*{title}" type="text" class="form-control" th:value="${title}">
+			  	</div>
+			  
+			  	<div class="form-group">
+				  	<label for="dateCreate">Date create:</label>
+			    	<input th:field="*{dateCreate}" type="date" class="form-control">
+			  	</div>
+			  
+			  	<div class="form-group">
+  				  	<label for="content">Content:</label><br>
+			    	<textarea th:field="*{content}" class="form-control" th:text="${content}"></textarea>
+			  	</div>
+			  	
+			  	<div class="form-group">
+				  	<label for="department">Assign for department:</label>
+				  	<select class="form-control" th:field="*{department}">
+				    	<option th:each="department: ${departments}" th:value="${department.id}" th:text="${department.name}" 
+				    		th:selected="${department.id == ticket.department.id}"></option>
+				  	</select>
+				</div>
+				
+				<div class="form-group form-check">
+					<label class="form-check-label" for="status">
+						<input type="checkbox" class="form-check-input" th:field="*{status}" th:checked="${status}"> Processed
+					</label>
+				</div>
+			  	
+			  	<button type="submit" class="btn btn-success">Add</button>
+			  </div>
+			  
+			</form>
+		</div>
+	</div>
+</div>

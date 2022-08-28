@@ -1,0 +1,5 @@
+package com.complaint.management.validation;
+
+public class DepartmentValidator {
+
+}

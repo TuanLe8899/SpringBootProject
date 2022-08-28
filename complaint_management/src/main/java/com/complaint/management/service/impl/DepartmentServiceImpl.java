@@ -3,8 +3,7 @@ package com.complaint.management.service.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,14 +55,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	public Page<DepartmentDTO> getAllDepartments(int page, int size, Sort sort) {
-		Page<Department> departments = departmentRepository.findAll(PageRequest.of(page, size, sort));
+	public Page<DepartmentDTO> getAllDepartments(Pageable pageable) {
+		Page<Department> departments = departmentRepository.findAll(pageable);
 		return departments.map((department) -> mapper.map(department, DepartmentDTO.class));
 	}
 
 	@Override
-	public Page<DepartmentDTO> searchByName(String name, int page, int size, Sort sort) {
-		Page<Department> departments = departmentRepository.searchByName(name, PageRequest.of(page, size, sort));
+	public Page<DepartmentDTO> searchByName(String name, Pageable pageable) {
+		Page<Department> departments = departmentRepository.searchByName(name, pageable);
 		return departments.map((department) -> mapper.map(department, DepartmentDTO.class));
 	}
 	
